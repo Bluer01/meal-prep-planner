@@ -1,0 +1,14 @@
+# Application dependencies
+flask==3.0.0
+python-dotenv==1.0.0
+gunicorn==21.2.0
+
+# Development dependencies
+pytest==7.4.3
+pytest-cov==4.1.0
+black==23.10.1
+flake8==6.1.0
+mypy==1.6.1
+
+# Type stubs
+types-flask==1.1.6
