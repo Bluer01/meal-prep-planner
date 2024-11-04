@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   web:
     build: .
@@ -7,15 +5,30 @@ services:
       - "8000:8000"
     volumes:
       - .:/app
-    env_file:
-      - .env
     environment:
+      - FLASK_APP=run.py
       - FLASK_ENV=development
       - FLASK_DEBUG=1
-    command: flask run --host=0.0.0.0 --port=8000
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
+      - SECRET_KEY=your-secret-key-here
+      - CSRF_SECRET_KEY=your-csrf-secret-key-here
+    depends_on:
+      redis:
+        condition: service_started
 
-  test:
-    build: .
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
     volumes:
-      - .:/app
-    command: pytest
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
+volumes:
+  redis_data:

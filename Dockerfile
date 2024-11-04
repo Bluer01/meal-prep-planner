@@ -1,17 +1,11 @@
-# Use official Python runtime as base image
+# Use Python 3.11 image
 FROM python:3.11-slim
 
 # Set working directory
 WORKDIR /app
 
-# Set environment variables
-ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    FLASK_APP=run.py \
-    FLASK_ENV=production
-
 # Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y \
     gcc \
     && rm -rf /var/lib/apt/lists/*
 
@@ -19,13 +13,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy project
+# Copy project files
 COPY . .
 
-# Create non-root user
-RUN adduser --disabled-password --gecos '' appuser
-RUN chown -R appuser:appuser /app
-USER appuser
+# Expose port
+EXPOSE 8000
 
-# Run gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "run:app"]
+# Run the application
+CMD ["flask", "run", "--host=0.0.0.0", "--port=8000"]
